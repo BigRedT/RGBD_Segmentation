@@ -10,3 +10,6 @@ For superpixel, edge and pairwise cues:
 
 For region proposal: 
 	(1) added dataset/rgbd-scenes
+
+@aditya (04/30/15):
+	added initial version of edge boxes, with few results on our dataset in code/
