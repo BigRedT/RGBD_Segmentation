@@ -12,4 +12,5 @@ For region proposal:
 	(1) added dataset/rgbd-scenes
 
 @aditya (04/30/15):
+	use top-level script runThis (to integrate all pieces of code)
 	added initial version of edge boxes, with few results on our dataset in code/
