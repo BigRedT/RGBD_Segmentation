@@ -5,7 +5,7 @@ function region_proposals = generate_region_proposals(I, params, plotFlag)
 %        params: initialized in runThis
 %	 plotFlag: [optional] set true, to visualize boxes
 % Output:
-%        regions: [n x 6] array, each row [x1 y1 w h x2 y2], I(y1:y2, x1:x2) is region
+%        regions: [n x 7] array, each row [x1 y1 w h s x2 y2], I(y1:y2, x1:x2) is region
 %%
 
 if nargin < 3
@@ -22,12 +22,31 @@ bbs = bbs(1:params.score_threshold_num, :);
 
 bbs = [bbs, bbs(:, 1) + bbs(:, 3), bbs(:, 2) + bbs(:, 4)];
 
-id = 1;
+i = 1;
 region_proposals = [];
-region_proposals(end+1, :) = bbs(id, :);
+region_proposals(end+1, :) = bbs(i, :);
 
-%TODO(aditya): threshold by intersection over union
-region_proposals(end+1:end+params.num_regions-1,:) = bbs(id+1:id+params.num_regions-1, :);
+i = 2;
+while size(region_proposals, 1) < params.num_regions & i <= params.score_threshold_num
+	maxScore = -1;
+	for j = [1:size(region_proposals, 1)]
+		A = region_proposals(j, 1:4);
+		B = bbs(i, 1:4);
+		intersectionS = rectint(A, B);
+		unionS = A(3)*A(4) + B(3)*B(4) - intersectionS;
+		score = intersectionS/unionS;
+		if(score > maxScore)
+			maxScore = score;
+		end
+	end
+	if(maxScore < params.iou_threshold)
+		region_proposals(end+1, :) = bbs(i, :);
+	end
+	i = i + 1;
+
+end
+
+hold off;
 
 if plotFlag == true
 	figure(1);
@@ -45,7 +64,7 @@ if plotFlag == true
 		subplot(nRows, 5, i);
 		imshow( I( round(region_proposals(i,2)):round(region_proposals(i,7)), round(region_proposals(i,1)):round(region_proposals(i,6)), :) );
 	end
-	
+
 end
 
 end
