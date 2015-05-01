@@ -7,7 +7,7 @@ y = edgeNbrs(:,2);
 A = [-x.^3 -x.^2 -x -ones(num_nbrs,1) y];
 z = A*[p'; 1];
 pos_class = z>0;
-if(mean(nbr_depths(pos_class))>mean(nbr_depths(~pos_class)))
+if(max(nbr_depths(pos_class))>max(nbr_depths(~pos_class)))
     fg_class = ~pos_class;
 else
     fg_class = pos_class;
