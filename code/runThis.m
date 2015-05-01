@@ -16,4 +16,14 @@ params = struct(...
 'iou_threshold', 0.7 ...
 );
 
-regions = generate_region_proposals(I, params, true);
+regions = generate_region_proposals(I, params, false);
+
+K = 50;
+m = 25;
+for i = [1:size(regions, 1)]
+	currRegion = regions(i, :);
+	[~, ~, imgVis] = slic(I(currRegion(2):currRegion(7), currRegion(1):currRegion(6), :), K, m);
+	%imwrite(imgVis, ['out_' num2str(i) '.png']);
+	%imshow(imgVis);
+	%k = waitforbuttonpress;
+end
