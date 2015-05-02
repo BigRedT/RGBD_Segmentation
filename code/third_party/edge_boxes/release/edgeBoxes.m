@@ -1,4 +1,4 @@
-function bbs = edgeBoxes( I, model, varargin )
+function [bbs, E] = edgeBoxes( I, model, varargin )
 % Generate Edge Boxes object proposals in given image(s).
 %
 % Compute Edge Boxes object proposals as described in:
@@ -73,14 +73,14 @@ if(nargin==0), bbs=o; return; end
 
 % run detector possibly over multiple images and optionally save results
 f=o.name; if(~isempty(f) && exist(f,'file')), bbs=1; return; end
-if(~iscell(I)), bbs=edgeBoxesImg(I,model,o); else n=length(I);
-  bbs=cell(n,1); parfor i=1:n, bbs{i}=edgeBoxesImg(I{i},model,o); end; end
+if(~iscell(I)), [bbs, E] =edgeBoxesImg(I,model,o); else n=length(I);
+  bbs=cell(n,1); E = cell(n, 1); parfor i=1:n, [bbs{i}, E{i}] = edgeBoxesImg(I{i},model,o); end; end
 d=fileparts(f); if(~isempty(d)&&~exist(d,'dir')), mkdir(d); end
 if(~isempty(f)), save(f,'bbs'); bbs=1; end
 
 end
 
-function bbs = edgeBoxesImg( I, model, o )
+function [bbs, E] = edgeBoxesImg( I, model, o )
 % Generate Edge Boxes object proposals in single image.
 if(all(ischar(I))), I=imread(I); end
 model.opts.nms=0; [E,O]=edgesDetect(I,model);
