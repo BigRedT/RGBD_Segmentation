@@ -25,6 +25,10 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, patch_coord)
 	energy = unary_edge(im_patch, im_depth_patch, 'edges', im_edge_patch, 'visualize', false);
 	%[color_unary] = runColorGMMUnary(im_patch, im_depth, patch_coord);
 
+	figure(1);
+	imagesc(energy);
+	k1 = waitforbuttonpress;
+	
 	%add pairwise terms
 	h = size(im_patch, 1); 
 	w = size(im_patch, 2); 
@@ -33,19 +37,15 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, patch_coord)
 
 	[uniformCost, horzCost, vertCost] = createSmoothnessCost(im_depth_patch, im_edge_patch, sp_labels);
 
-
 	%open a graph cut object
-	[gch] = GraphCut('open', unaryCost, uniformCost, vertCost, horzCost);
+	%[gch] = GraphCut('open', unaryCost, uniformCost, vertCost, horzCost);
 
 	%set initial labels
-	[gch] = GraphCut('set', gch, labels);
+	%[gch] = GraphCut('set', gch, labels);
 
 	%perform minimization
-	[gch labels] = GraphCut('expand', gch);
+	%[gch labels] = GraphCut('expand', gch);
 
-	%figure(1);
-	%imagesc(energy);
-	%k1 = waitforbuttonpress;
 
 	fgLabels = [];
 end
