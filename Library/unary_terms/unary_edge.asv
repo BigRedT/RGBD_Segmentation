@@ -1,4 +1,4 @@
-function energy = unary_edge(im_rgb,im_depth,varargin)
+function unary_edge(im_rgb,im_depth,varargin)
 p = inputParser;
 addOptional(p,'minEdgeLen',3);
 addOptional(p,'edgeMap',[]);
@@ -15,9 +15,7 @@ if(isempty(args.edgeMap))
     edge_orient(neg_slope_mask) = pi + edge_orient(neg_slope_mask);
     edges = nonmax(edge_mag,edge_orient);
     bw = edges > 0;
-else
-    bw = args.edgeMap > 0.1;
-end
+    el
 
 % Find connected components and reject small edges
 labels = bwlabel(bw);
@@ -83,6 +81,4 @@ neg_points = cell2mat(neg_points_cell);
 
 if(args.visualize)
     figure(2),imagesc(bw);
-end
-
 end
