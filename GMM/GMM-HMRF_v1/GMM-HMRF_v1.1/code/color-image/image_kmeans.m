@@ -8,6 +8,7 @@
 %   GMM: Gaussian mixture model parameters
 
 function [X GMM]=image_kmeans(Y,k,g)
+%function [X GMM]=FG_estimate(Y,Y_large,g)
 [m n temp]=size(Y);
 y=reshape(Y,[m*n 3]);
 x=kmeans(y,k);
