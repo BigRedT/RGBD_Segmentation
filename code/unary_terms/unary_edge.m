@@ -1,18 +1,23 @@
-function unary_edge(im_rgb,im_depth,edges,varargin)
+function energy = unary_edge(im_rgb,im_depth,varargin)
 p = inputParser;
 addOptional(p,'minEdgeLen',3);
 addOptional(p,'visualize',true);
+addOptional(p,'edges',[]);
 parse(p,varargin{:});
 args = p.Results;
 
 [h,w,~] = size(im_rgb);
 
 % Find edges
-[edge_mag, edge_orient] = coloredges(im_rgb);
-neg_slope_mask = edge_orient < 0 ;
-edge_orient(neg_slope_mask) = pi + edge_orient(neg_slope_mask);
-edges = nonmax(edge_mag,edge_orient);
-bw = edges > 0;
+if(isempty(args.edges))
+	[edge_mag, edge_orient] = coloredges(im_rgb);
+	neg_slope_mask = edge_orient < 0 ;
+	edge_orient(neg_slope_mask) = pi + edge_orient(neg_slope_mask);
+	edges = nonmax(edge_mag,edge_orient);
+	bw = edges > 0;
+else
+	bw = args.edges > 0.1;
+end
 
 % Find connected components and reject small edges
 labels = bwlabel(bw);
@@ -50,7 +55,7 @@ DTs = DTs/norm([h,w],2);
 % Classify pixels based on which side of the edge they lie on
 pos_points_cell = cell(num_edges,1);
 neg_points_cell = cell(num_edges,1);
-K = 10;
+K = min(10, numel(unique(labels(:)))-1);
 weights = exp(-0.5*[1:K]);
 weights = weights/sum(weights);
 energy = zeros(h,w);
