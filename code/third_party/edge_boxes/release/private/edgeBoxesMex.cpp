@@ -184,7 +184,8 @@ void EdgeBoxGenerator::clusterEdges( arrayf &E, arrayf &O, arrayf &V )
   // optionally create visualization (assume memory initialized is 3*w*h)
   if( V._x ) for( c=0; c<w; c++ ) for( r=0; r<h; r++ ) {
     i=_segIds.val(c,r);
-    V.val(c+w*0,r) = i<=0 ? 1 : ((123*i + 128)%255)/255.0f;
+    //V.val(c+w*0,r) = i<=0 ? 1 : ((123*i + 128)%255)/255.0f;
+    V.val(c+w*0,r) = i<=0 ? 0 : 1;
     V.val(c+w*1,r) = i<=0 ? 1 : ((7*i + 3)%255)/255.0f;
     V.val(c+w*2,r) = i<=0 ? 1 : ((174*i + 80)%255)/255.0f;
   }
