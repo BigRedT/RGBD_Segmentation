@@ -4,7 +4,7 @@ matlabSearchPath;
 
 rootDir = '/home/ardeshp2/cs543_project/RGBD_Segmentation/';
 
-I = imread([rootDir 'dataset/rgbd-uncropped-dataset/apple/apple_1/apple_1_1_1.png']);
+I = im2double(imread([rootDir 'dataset/rgbd-uncropped-dataset/apple/apple_1/apple_1_1_1.png']));
 %I = imread([rootDir 'dataset/rgbd-uncropped-dataset/ball/ball_1/ball_1_1_1.png']);
 %I = imread([rootDir 'dataset/rgbd-uncropped-dataset/bowl/bowl_1/bowl_1_1_1.png']);
 %I = imread([rootDir 'dataset/rgbd-uncropped-dataset/cell_phone/cell_phone_1/cell_phone_1_1_1.png']);
@@ -12,6 +12,15 @@ I = imread([rootDir 'dataset/rgbd-uncropped-dataset/apple/apple_1/apple_1_1_1.pn
 %can read depth image with
 %I_depth = imread([rootDir 'dataset/rgbd-uncropped-dataset/bowl/bowl_1/bowl_1_1_1_depth.png']);
 I_depth = imread([rootDir 'dataset/rgbd-uncropped-dataset/apple/apple_1/apple_1_1_1_depth.png']);
+
+%smooth the depth
+I_depth = double(I_depth);
+I_depth = I_depth/100;
+alpha = 0.5;
+I_depth = fill_depth_colorization(I, I_depth, alpha);
+I_depth = I_depth.*100;
+
+disp(['Done depth smoothing']);
 
 params = struct(...
 'num_regions', 10, ...
