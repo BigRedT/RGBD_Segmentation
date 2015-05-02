@@ -70,8 +70,6 @@ end
 end
 
 function [opts, model] = get_model_opts()
-	addpath(genpath('third_party/toolbox/'));
-	addpath(genpath('third_party/edge_boxes/release/'));
 
 	%% load pre-trained edge detection model and set opts (see edgesDemo.m)
 	model=load('models/forest/modelBsds'); model=model.model;
