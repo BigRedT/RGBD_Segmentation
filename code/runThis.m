@@ -2,7 +2,7 @@
 
 matlabSearchPath;
 
-rootDir = '/home/ardeshp2/cs543_project/RGBD_Segmentation/';
+rootDir = fullfile(pwd,'../');
 
 I = im2double(imread([rootDir 'dataset/rgbd-uncropped-dataset/apple/apple_1/apple_1_1_1.png']));
 %I = imread([rootDir 'dataset/rgbd-uncropped-dataset/ball/ball_1/ball_1_1_1.png']);
