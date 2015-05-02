@@ -32,13 +32,13 @@ for it=1:EM_iter
     end
 end
 
-figure;
-plot(1:it,sum_U(1:it),'LineWidth',2);
-hold on;
-plot(1:it,sum_U(1:it),'.','MarkerSize',20);
-title('sum of U in each EM iteration');
-xlabel('EM iteration');
-ylabel('sum of U');
+%figure;
+%plot(1:it,sum_U(1:it),'LineWidth',2);
+%hold on;
+%plot(1:it,sum_U(1:it),'.','MarkerSize',20);
+%title('sum of U in each EM iteration');
+%xlabel('EM iteration');
+%ylabel('sum of U');
 
-figure;
-imagesc(X);
+%figure;
+%imagesc(X);
