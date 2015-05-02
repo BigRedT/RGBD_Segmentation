@@ -3,7 +3,7 @@
 % params
 %K = 5;
 %compactness = 0.5;
-addpath(genpath('/Users/zstufzxy/Desktop/Course/CS543/project/GMM-HMRF_v1'));
+addpath(genpath('./third_party/GMM/GMM-HMRF_v1/GMM-HMRF_v1'));
 
 k=5; % k: number of regions
 g=3; % g: number of GMM components
