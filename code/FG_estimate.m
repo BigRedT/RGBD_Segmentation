@@ -9,6 +9,7 @@
 
 %function [X GMM]=image_kmeans(Y,k,g)
 function [X GMM]=FG_estimate(Y,Y_large,g,loc)
+loc = [loc(3), loc(1)];
 [m n temp]=size(Y_large);
 %y=reshape(Y,[m*n 3]);
 %x=kmeans(y,k);
@@ -18,4 +19,7 @@ function [X GMM]=FG_estimate(Y,Y_large,g,loc)
 X = ones(m,n);
 X(loc(2):loc(2)+m0-1,loc(1):loc(1)+n0-1) = 2;
 
+figure(1);
+imshow(Y_large(loc(2):loc(2)+m0-1,loc(1):loc(1)+n0-1, :));
+k1 = waitforbuttonpress;
 GMM=get_GMM(X,Y_large,g);

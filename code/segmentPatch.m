@@ -9,24 +9,24 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, patch_coord)
 	imshow(im_patch);
 	k1 = waitforbuttonpress;
 
-	figure(1);
-	imshow(im_edge_patch);
-	k1 = waitforbuttonpress;
+	%figure(1);
+	%imshow(im_edge_patch);
+	%k1 = waitforbuttonpress;
 	
-	figure(1);
-	imagesc(im_depth_patch);
-	k1 = waitforbuttonpress;
+	%figure(1);
+	%imagesc(im_depth_patch);
+	%k1 = waitforbuttonpress;
 
 	size(im_patch)
 	size(im_edge_patch)
 	size(im_depth_patch) 
 	
 	%add unary terms
-	energy = unary_edge(im_patch, im_depth_patch, 'edges', im_edge_patch, 'visualize', false);
-	%[color_unary] = runColorGMMUnary(im_patch, im_depth, patch_coord);
+	%energy = unary_edge(im_patch, im_depth_patch, 'edges', im_edge_patch, 'visualize', false);
+	[color_unary] = runColorGMMUnary(im_patch, im, im_depth, patch_coord);
 
 	figure(1);
-	imagesc(energy);
+	imagesc(color_unary);
 	k1 = waitforbuttonpress;
 	
 	%add pairwise terms
@@ -45,7 +45,6 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, patch_coord)
 
 	%perform minimization
 	%[gch labels] = GraphCut('expand', gch);
-
 
 	fgLabels = [];
 end
