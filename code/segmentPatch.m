@@ -5,16 +5,16 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, patch_coord)
 	im_edge_patch = im_edge(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), :);
 
 	%debug
-	figure(1);
-	imshow(im_patch);
-	k1 = waitforbuttonpress;
+	%figure(1);
+	%imshow(im_patch);
+	%k1 = waitforbuttonpress;
 
 	%figure(1);
 	%imshow(im_edge_patch);
 	%k1 = waitforbuttonpress;
 	
 	%figure(1);
-	%imagesc(im_depth_patch);
+	%imagesc(im_depth_patch), colormap gray;
 	%k1 = waitforbuttonpress;
 
 	size(im_patch)
@@ -22,20 +22,20 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, patch_coord)
 	size(im_depth_patch) 
 	
 	%add unary terms
-	energy = unary_edge(im_patch, im_depth_patch, 'edges', im_edge_patch, 'visualize', false);
-	%[color_unary] = runColorGMMUnary(im_patch, im, im_depth, patch_coord);
+	%energy = unary_edge(im_patch, im_depth_patch, 'edges', im_edge_patch, 'visualize', false);
+	[color_unary] = runColorGMMUnary(im_patch, im, im_depth, patch_coord);
 
 	figure(1);
-	imagesc(color_unary);
+	imagesc(color_unary(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4)));
 	k1 = waitforbuttonpress;
 	
 	%add pairwise terms
-	h = size(im_patch, 1); 
-	w = size(im_patch, 2); 
-	K = min(w/5, h/5).^2;
-	[sp_labels,  ~, ~] = slic(im_patch, K, m);
+	%h = size(im_patch, 1); 
+	%w = size(im_patch, 2); 
+	%K = min(w/5, h/5).^2;
+	%[sp_labels,  ~, ~] = slic(im_patch, K, m);
 
-	[uniformCost, horzCost, vertCost] = createSmoothnessCost(im_depth_patch, im_edge_patch, sp_labels);
+	%[uniformCost, horzCost, vertCost] = createSmoothnessCost(im_depth_patch, im_edge_patch, sp_labels);
 
 	%open a graph cut object
 	%[gch] = GraphCut('open', unaryCost, uniformCost, vertCost, horzCost);
