@@ -48,12 +48,10 @@ function [im_seg, im_patch] = segmentPatch(im, im_depth, im_edge, edge_group, pa
 	dataCost(:, :, 1) = (w_color).*(log(energy_color));
 	dataCost(:, :, 2) = (w_color).*(log(1-energy_color));
 
-	%figure(1);
-	%imagesc(energy); axis equal;
-	%k1 = waitforbuttonpress;
+	figure(1);
+	imagesc(energy_color);
+	title('unary color cost');
 
-	
-	
 	%add pairwise terms
 	K = min(w/5, h/5).^2;
 	[sp_labels,  ~, ~] = slic(im_patch, K, m);
@@ -78,7 +76,9 @@ function [im_seg, im_patch] = segmentPatch(im, im_depth, im_edge, edge_group, pa
 	blueImg(:, :, 3) = 1;
 
 	im_seg = blueImg.*mask3D + im_patch.*abs(mask3D-1);
-	
+
+	disp('Waiting..');	
+	k1 = waitforbuttonpress;
 	%figure(1);
 	%imshow(segImg);
 	%k1 = waitforbuttonpress;
@@ -90,17 +90,26 @@ function [uniformCost, horzCost, vertCost] = createSmoothnessCost(im_depth, im_e
 	uniformCost(2, 1) = 1;
 
 	w_sp = 1;
+	dc_off_sp = 1;
 	w_edge = 1;
 	w_depth = 1;
 
 	horzCost = double(zeros(size(im_depth, 1), size(im_depth, 2)));
 	for j = [1:size(im_depth, 2)-1]
-	        horzCost(:, j) = w_depth.*(exp(-1*(im_depth(:, j) - im_depth(:, j+1)).^2)) + w_edge.*(exp(-1*im_edge(:, j))) + double(sp_labels(:,j) == sp_labels(:, j+1)).*w_sp;   
+	        horzCost(:, j) = w_depth.*(exp(-1*(im_depth(:, j) - im_depth(:, j+1)).^2)) + w_edge.*(exp(-1*im_edge(:, j))) + (double(sp_labels(:,j) == sp_labels(:, j+1))+dc_off_sp).*w_sp;   
 	end
 
 	vertCost = double(zeros(size(im_depth, 1), size(im_depth, 2)));
 	for j = [1:size(im_depth, 1)-1]
 	        vertCost(j, :) = w_depth.*(exp(-1*(im_depth(j, :) - im_depth(j+1, :)).^2)) + w_edge.*(exp(-1*im_edge(j, :))) + double(sp_labels(j, :) == sp_labels(j+1, :)).*w_sp;   
 	end
+
+	figure(2);
+	imagesc(vertCost); 
+	title('vertical cost');
+
+	figure(3);
+	imagesc(horzCost); 
+	title('horz cost');
 
 end
