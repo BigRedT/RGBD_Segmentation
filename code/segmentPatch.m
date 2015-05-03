@@ -22,8 +22,8 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, patch_coord)
 	size(im_depth_patch) 
 	
 	%add unary terms
-	%energy = unary_edge(im_patch, im_depth_patch, 'edges', im_edge_patch, 'visualize', false);
-	[color_unary] = runColorGMMUnary(im_patch, im, im_depth, patch_coord);
+	energy = unary_edge(im_patch, im_depth_patch, 'edges', im_edge_patch, 'visualize', false);
+	%[color_unary] = runColorGMMUnary(im_patch, im, im_depth, patch_coord);
 
 	figure(1);
 	imagesc(color_unary);
