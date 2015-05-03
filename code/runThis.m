@@ -4,9 +4,9 @@ matlabSearchPath;
 
 rootDir = fullfile(pwd,'../');
 
-I = imread([rootDir 'dataset/rgbd-uncropped-dataset/apple/apple_1/apple_1_1_1.png']);
+I = im2double(imread([rootDir 'dataset/rgbd-uncropped-dataset/apple/apple_1/apple_1_1_1.png']));
 %I = imread([rootDir 'dataset/rgbd-uncropped-dataset/ball/ball_1/ball_1_1_1.png']);
-%I = imread([rootDir 'dataset/rgbd-uncropped-dataset/bowl/bowl_1/bowl_1_1_1.png']);
+%I = im2double(imread([rootDir 'dataset/rgbd-uncropped-dataset/bowl/bowl_1/bowl_1_1_1.png']));
 %I = imread([rootDir 'dataset/rgbd-uncropped-dataset/cell_phone/cell_phone_1/cell_phone_1_1_1.png']);
 
 %can read depth image with
@@ -20,7 +20,7 @@ alpha = 0.5;
 I_depth = fill_depth_colorization(im2double(I), I_depth, alpha);
 I_depth = I_depth.*100;
 
-save('depth.mat', 'I_depth');
+%save('depth.mat', 'I_depth');
 
 disp(['Done depth smoothing']);
 

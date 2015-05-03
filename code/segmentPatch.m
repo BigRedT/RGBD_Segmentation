@@ -11,14 +11,15 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, edge_group, patch_coord)
 	%debug
 	 figure(1);
 	 imshow(im_patch); axis equal;
-         % k1 = waitforbuttonpress;
+
+
 
 	%figure(1);
 	%imshow(im_edge_patch);
 	%k1 = waitforbuttonpress;
 	
 	%figure(1);
-	%imagesc(im_depth_patch);
+	%imagesc(im_depth_patch), colormap gray;
 	%k1 = waitforbuttonpress;
 
 	%size(im_patch)
@@ -26,6 +27,7 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, edge_group, patch_coord)
 	%size(im_depth_patch) 
 	
 	%add unary terms
+
 	energy = unary_edge(im_patch, im_depth_patch, 'edges', ...
 			    im_edge_patch, 'edge_group', ...
 			    edge_group_patch, 'visualize', false);
@@ -34,13 +36,14 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, edge_group, patch_coord)
 
 	figure(2);
 	imagesc(energy); axis equal;
+
 	k1 = waitforbuttonpress;
 	
 	%add pairwise terms
-	h = size(im_patch, 1); 
-	w = size(im_patch, 2); 
-	K = min(w/5, h/5).^2;
-	[sp_labels,  ~, ~] = slic(im_patch, K, m);
+	%h = size(im_patch, 1); 
+	%w = size(im_patch, 2); 
+	%K = min(w/5, h/5).^2;
+	%[sp_labels,  ~, ~] = slic(im_patch, K, m);
 
 	%[uniformCost, horzCost, vertCost] = createSmoothnessCost(im_depth_patch, im_edge_patch, sp_labels);
 
