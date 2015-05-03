@@ -1,4 +1,4 @@
-function [region_proposals, edges] = generate_region_proposals(I, params, plotFlag)
+function [region_proposals, edges, edge_groups] = generate_region_proposals(I, params, plotFlag)
 %%
 % Input:
 %        I: w x h x 3 color image
@@ -15,7 +15,7 @@ end
 [opts, model] = get_model_opts();
 
 disp('** Generating edge boxes **');
-tic, [bbs, edges] = edgeBoxes(I,model,opts); toc
+tic, [bbs, edges, edge_groups] = edgeBoxes(I,model,opts); toc
 
 %threshold by score
 bbs = bbs(1:params.score_threshold_num, :);

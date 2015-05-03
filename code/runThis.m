@@ -30,12 +30,12 @@ params = struct(...
 'iou_threshold', 0.7 ...
 );
 
-[regions, edges] = generate_region_proposals(I, params, false);
+[regions, edges, edge_group] = generate_region_proposals(I, params, false);
 
 regions = [regions, regions(:,3).*regions(:,4)];
 regions = sortrows(regions, [8 -5]);
 
 for i = [1:size(regions, 1)]
 	currRegion = regions(i, :);
-	fgLabels = segmentPatch(I, I_depth, edges, [currRegion(2), currRegion(7), currRegion(1), currRegion(6)]);
+	fgLabels = segmentPatch(I, I_depth, edges, edge_group, [currRegion(2), currRegion(7), currRegion(1), currRegion(6)]);
 end

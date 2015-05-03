@@ -3,6 +3,7 @@ p = inputParser;
 addOptional(p,'minEdgeLen',3);
 addOptional(p,'visualize',true);
 addOptional(p,'edges',[]);
+addOptional(p,'edge_group',[]);
 parse(p,varargin{:});
 args = p.Results;
 
@@ -20,9 +21,10 @@ else
 end
 
 % Find connected components and reject small edges
-labels = bwlabel(bw);
-num_edges = numel(unique(labels(:))) - 1;
-for i=1:num_edges
+if(isempty(args.edge_group))
+  labels = bwlabel(bw);
+  num_edges = numel(unique(labels(:))) - 1;
+  for i=1:num_edges
     lin_edge_idx = find(labels==i);
     if(numel(lin_edge_idx)<args.minEdgeLen+1)
         bw(lin_edge_idx) = 0;
@@ -31,9 +33,16 @@ for i=1:num_edges
     bw(1:h,w) = 0;
     bw(1,1:w) = 0;
     bw(h,1:w) = 0;
+  end
+  labels = bwlabel(bw);
+else
+  labels = args.edge_group;
+  component_numbers = sort(unique(labels(:)));
+  for i=1:numel(component_numbers)
+    labels(labels==component_numbers(i)) = i-1;
+  end 
 end
 
-labels = bwlabel(bw);
 num_edges = numel(unique(labels(:))) - 1;
 edgeProperties.length = zeros(num_edges,1);
 for i=1:num_edges
@@ -56,7 +65,7 @@ DTs = DTs/norm([h,w],2);
 pos_points_cell = cell(num_edges,1);
 neg_points_cell = cell(num_edges,1);
 K = min(10, numel(unique(labels(:)))-1);
-weights = exp(-0.5*[1:K]);
+weights = exp(-0.1*[1:K]);
 weights = weights/sum(weights);
 energy = zeros(h,w);
 for k=1:K
@@ -71,7 +80,8 @@ for k=1:K
         neg_points_cell{i} = [I(~fg_idx),J(~fg_idx)];
         lin_update_idx = sub2ind([h,w],I(fg_idx),J(fg_idx));
         DT_tmp = DTs(:,:,i);
-        energy(lin_update_idx) = energy(lin_update_idx) + weights(k)*exp(2*edgeProperties.length(i))*DT_tmp(lin_update_idx);
+        energy(lin_update_idx) = energy(lin_update_idx) + ...
+            weights(k)*exp(2*edgeProperties.length(i)); % *DT_tmp(lin_update_idx);
         if(args.visualize)
             figure(1),imagesc(energy);
         end

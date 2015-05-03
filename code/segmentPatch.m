@@ -1,13 +1,17 @@
-function fgLabels = segmentPatch(im, im_depth, im_edge, patch_coord)
+function fgLabels = segmentPatch(im, im_depth, im_edge, edge_group, patch_coord)
 	m = 25;
 	im_patch = im(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), :);
 	im_depth_patch = im_depth(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), :);
-	im_edge_patch = im_edge(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), :);
+	im_edge_patch = im_edge(patch_coord(1):patch_coord(2),patch_coord(3):patch_coord(4), :);
+	edge_group_patch = ...
+	    edge_group(patch_coord(1):patch_coord(2), ...
+			     patch_coord(3):patch_coord(4),1);
+
 
 	%debug
-	figure(1);
-	imshow(im_patch);
-	k1 = waitforbuttonpress;
+	 figure(1);
+	 imshow(im_patch); axis equal;
+         % k1 = waitforbuttonpress;
 
 	%figure(1);
 	%imshow(im_edge_patch);
@@ -17,16 +21,19 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, patch_coord)
 	%imagesc(im_depth_patch);
 	%k1 = waitforbuttonpress;
 
-	size(im_patch)
-	size(im_edge_patch)
-	size(im_depth_patch) 
+	%size(im_patch)
+	%size(im_edge_patch)
+	%size(im_depth_patch) 
 	
 	%add unary terms
-	energy = unary_edge(im_patch, im_depth_patch, 'edges', im_edge_patch, 'visualize', false);
+	energy = unary_edge(im_patch, im_depth_patch, 'edges', ...
+			    im_edge_patch, 'edge_group', ...
+			    edge_group_patch, 'visualize', false);
+
 	%[color_unary] = runColorGMMUnary(im_patch, im, im_depth, patch_coord);
 
-	figure(1);
-	imagesc(color_unary);
+	figure(2);
+	imagesc(energy); axis equal;
 	k1 = waitforbuttonpress;
 	
 	%add pairwise terms
@@ -35,7 +42,7 @@ function fgLabels = segmentPatch(im, im_depth, im_edge, patch_coord)
 	K = min(w/5, h/5).^2;
 	[sp_labels,  ~, ~] = slic(im_patch, K, m);
 
-	[uniformCost, horzCost, vertCost] = createSmoothnessCost(im_depth_patch, im_edge_patch, sp_labels);
+	%[uniformCost, horzCost, vertCost] = createSmoothnessCost(im_depth_patch, im_edge_patch, sp_labels);
 
 	%open a graph cut object
 	%[gch] = GraphCut('open', unaryCost, uniformCost, vertCost, horzCost);
