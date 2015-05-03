@@ -84,21 +84,9 @@ function [im_seg, im_patch] = segmentPatch(im, im_depth, im_edge, edge_group, pa
    	imagesc(vertCost); 
 	title('vertical cost');
 
-	subplot(2,3,3);
+	subplot(2,3,3)
 	imagesc(horzCost); 
 	title('horz cost');
-    
-    subplot(2,3,4),
-    imagesc(energy_edge);
-    title('energy edge');
-    
-    subplot(2,3,5);
-    imshow(im_patch);
-    title('image patch');
-    
-    subplot(2,3,6);
-    imshow(im_seg);
-    title('segmented image');
 	disp('Waiting..');	
 	k1 = waitforbuttonpress;
 	%figure(1);

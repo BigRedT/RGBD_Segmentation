@@ -36,25 +36,23 @@ if(isempty(args.edge_group))
   end
   labels = bwlabel(bw);
 else
-  labels_group = args.edge_group;
-  component_numbers = sort(unique(labels_group(:)));
-  edge_len = zeros(numel(component_numbers),1);
+  labels = args.edge_group;
+  component_numbers = sort(unique(labels(:)));
+  edge_len = zeros(numel(component_numbers));
   for i=1:numel(component_numbers)
-    label_mask = labels_group==component_numbers(i);
-    edge_len(i) = sum(label_mask(:));
+    label_mask = labels==component_numbers(i)
+    edge_len(i) = sum(label_mask);
   end
-  [sort_len_val, ~] = sort(edge_len,'descend');
-  thresh_idx = floor(min([numel(edge_len),max(numel(edge_len)/4,10)]));
+  [sort_len_Val, len_sort_idx] = sort(edge_len,'descend');
+  thresh_idx = min([numel(edge_len),max(numel(edge_len)/4,10)]);
   count = 0;
-  labels = labels_group;
   for i=1:numel(component_numbers)
-    label_mask = labels_group==component_numbers(i);
-    if(sum(label_mask)<sort_len_val(thresh_idx))
-        labels(label_mask) = 0;
-        continue;
-    end
-    labels(label_mask) = count;
-    count = count+1;
+    label_mask = labels==component_numbers(i)
+      if(sum(label_mask)<sort_len_val(thresh_idx))
+          continue;
+      end
+      count = count+1;
+            labels(label_mask) = i-1;
   end 
 end
 
@@ -68,6 +66,8 @@ minLength = min(edgeProperties.length);
 maxLength = max(edgeProperties.length);
 edgeProperties.length = (edgeProperties.length - minLength) / (maxLength - minLength);
 
+%% Sort the edges by edge length
+[~,sort_len_idx] = sort(edgeProperties.length);
 
 % Find distance to nearest edges
 DTs = zeros(h,w,num_edges);
@@ -80,7 +80,7 @@ DTs = DTs/norm([h,w],2);
 % Classify pixels based on which side of the edge they lie on
 pos_points_cell = cell(num_edges,1);
 neg_points_cell = cell(num_edges,1);
-K = min(1, numel(unique(labels(:)))-1);
+K = min(10, numel(unique(labels(:)))-1);
 weights = exp(-0.1*[1:K]);
 weights = weights/sum(weights);
 energy = zeros(h,w);
