@@ -1,9 +1,10 @@
-function [cIndMap, time, imgVis] = slic(img, K, compactness)
+function [cIndMap, time, imgVis] = slic_rgbd(img, depth, K, compactness, depth_weight)
 
 %% Implementation of Simple Linear Iterative Clustering (SLIC)
 %
 % Input:
 %   - img: input color image
+%   - depth: input normalized depth
 %   - K:   number of clusters
 %   - compactness: the weighting for compactness
 % Output: 
@@ -16,11 +17,12 @@ tic;
 warning off;
 
 img = im2double(img);
-
+depth = depth_weight*depth;
 %compute gradient magnitude
 [gmag3d(:, :, 1), ~] = imgradient(img(:, :, 1));
 [gmag3d(:, :, 2), ~] = imgradient(img(:, :, 2));
 [gmag3d(:, :, 3), ~] = imgradient(img(:, :, 3));
+% [gmag3d(:, :, 4), ~] = imgradient(depth);
 gmag = sqrt(sum(gmag3d.^2, 3))/3;
 
 rgbImg = img;
@@ -44,6 +46,7 @@ dist = 10^9.*double(ones(size(img, 1), size(img, 2)));
 centers(:, :, 1:3) = img(2:S:end-1, 2:S:end-1, :);
 centers(:, :, 4) = row(2:S:end-1, 2:S:end-1);
 centers(:, :, 5) = col(2:S:end-1, 2:S:end-1);
+centers(:, :, 6) = depth(2:S:end-1, 2:S:end-1, :);
 
 %move cluster centers to lowest gradient position
 h_c = size(centers, 1);
@@ -56,6 +59,7 @@ for i = [1:h_c]
 		centers_patch(:, :, 1:3) = img(x-1:x+1, y-1:y+1, :);
 		centers_patch(:, :, 4) = row(x-1:x+1, y-1:y+1);
 		centers_patch(:, :, 5) = col(x-1:x+1, y-1:y+1);
+                centers_patch(:, :, 6) = depth(x-1:x+1, y-1:y+1, :);
 		gmag_patch = gmag(x-1:x+1, y-1:y+1);
 		ordfilt_out = ordfilt2(gmag_patch, 1, ones(3, 3), 'zeros');
 		ind_min = find(gmag_patch == ordfilt_out(2,2));
@@ -98,12 +102,18 @@ for iterations = [1:10]
 			feature_patch(:, :, 1:3) = img(xmin:xmax, ymin:ymax, :);
 			feature_patch(:, :, 4) = row(xmin:xmax, ymin:ymax);
 			feature_patch(:, :, 5) = col(xmin:xmax, ymin:ymax);
+			feature_patch(:, :, 6) = depth(xmin:xmax, ymin:ymax);
 			dist_patch = dist(xmin:xmax, ymin:ymax);
 			label_patch = label(xmin:xmax, ymin:ymax);
 
 			%compute distances
-			dc = sqrt((feature_patch(:, :, 1) - centers(i, j, 1)).^2 + (feature_patch(:, :, 2) - centers(i, j, 2)).^2 + (feature_patch(:, :, 3) - centers(i, j, 3)).^2);
-			ds = sqrt((feature_patch(:, :, 4) - centers(i, j, 4)).^2 + (feature_patch(:, :, 5) - centers(i, j, 5)).^2); 	
+			dc = sqrt((feature_patch(:, :, 1) - centers(i, j, 1)).^2 + ...
+                                  (feature_patch(:, :, 2) - centers(i, j, 2)).^2 + ...
+                                  (feature_patch(:, :, 3) - centers(i, j, 3)).^2);
+                                  
+			ds = sqrt((feature_patch(:, :, 4) - centers(i, j, 4)).^2 + ...
+                                  (feature_patch(:, :, 5) - centers(i, j, 5)).^2 + ...
+                                  (feature_patch(:, :, 6) - centers(i, j, 6)).^2);
 			D = sqrt((dc.^2) + (((compactness^2)/(S^2)).*(ds.^2)));
 			%update the membership and min distance
 			mask_patch = D < dist_patch;
@@ -131,6 +141,8 @@ for iterations = [1:10]
 			newy = reshape(col, [], 1);
 			centers(i, j, 5) = sum(newy(memb_id), 1)/numel(memb_id);
 
+                        newdepth = reshape(depth, [], 1);
+                        centers(i, j, 6) = sum(newdepth(memb_id),1)/numel(memb_id);
 		end
 	end
 
