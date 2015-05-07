@@ -16,9 +16,9 @@ compactness = 25;
 depth_weight = 1;
 
 if(strcmp(args.type,'rgb'))
-    cIndMap = slic_rgb(img, K, compactness);
+    [cIndMap, ~, ~, imgVis] = slic_rgb(img, K, compactness);
 elseif(strcmp(args.type,'rgbd'))
-    cIndMap = slic_rgbd(img, depth, K, compactness, depth_weight);
+    [cIndMap, ~, ~, imgVis] = slic_rgbd(img, depth, K, compactness, depth_weight);
 end
 
 [undersegError, ~,  undersegErrorSLIC] = ...

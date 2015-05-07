@@ -1,4 +1,5 @@
-data_dir = '/home/tanmay/Documents/CS543/dataset/rgbd-dataset';
+data_dir = '/home/tanmay/Documents/CS543/dataset/rgbd-object';
+depth_dir = '/home/tanmay/Documents/CS543/dataset/rgbd_objects_filled_depth/';
 output_dir = '/home/tanmay/Documents/CS543/output_SLIC';
 if(~exist(output_dir,'dir'))
     mkdir(output_dir);
@@ -11,7 +12,7 @@ else
     load(fullfile(output_dir, 'file_list.mat'));
 end
 
-num_files = numel(file_list);
+num_files = numel(file_list)
 
 undersegError_rgb = zeros(num_files, 1);
 undersegErrorSLIC_rgb = zeros(num_files, 1);
@@ -20,9 +21,11 @@ undersegErrorSLIC_rgbd = zeros(num_files, 1);
 
 for i=1:num_files
     disp(['File: ' num2str(i)]);
-    img = imread(file_list(i).img);
-    depth = imread(file_list(i).depth);
-    mask = imread(file_list(i).mask);
+    img = imread(fullfile(data_dir,file_list(i).img));
+    % depth = imread(fullfile(data_dir,file_list(i).depth));
+    load(fullfile(depth_dir,[num2str(i) '.mat'])); % loads filled_depth
+    depth = filled_depth;
+    mask = imread(fullfile(data_dir,file_list(i).mask));
 
     [cIndMap_rgb, imgVis_rgb, undersegError_rgb(i), undersegErrorSLIC_rgb(i)] = ...
         slic_interface(img, depth, mask, 'type', 'rgb');
@@ -37,3 +40,4 @@ end
 save(fullfile(output_dir, 'slic_errors.mat'), ...
      'undersegError_rgb', 'undersegErrorSLIC_rgb', ...
      'undersegError_rgbd', 'undersegErrorSLIC_rgbd');
+

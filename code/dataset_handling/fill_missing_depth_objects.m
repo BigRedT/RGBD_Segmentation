@@ -1,11 +1,11 @@
-function fill_missing_depth_objects(data_dir,depth_dir)
+function fill_missing_depth_objects(file_list,data_dir,depth_dir)
 
 if(~exist(depth_dir,'dir'))
     mkdir(depth_dir);
 end
 
-file_list = read_rgbd_object_dataset(data_dir);
-save(fullfile(depth_dir,'file_list.mat'),'file_list');
+% file_list = read_rgbd_object_dataset(data_dir);
+% save(fullfile(depth_dir,'file_list.mat'),'file_list');
 num_files = numel(file_list);
 
 file_list_cell = mat2cell(file_list,ones(1,num_files),1);

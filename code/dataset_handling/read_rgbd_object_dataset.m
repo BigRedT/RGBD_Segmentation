@@ -27,8 +27,9 @@ for i=1:num_objects
                 names.img = fullfile(obj_name,[obj_name '_' num2str(instance_num)],[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_' num2str(frame_num) '_crop.png']);
                 names.depth = fullfile(obj_name,[obj_name '_' num2str(instance_num)],[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_' num2str(frame_num) '_depthcrop.png']);
                 names.mask = fullfile(obj_name,[obj_name '_' num2str(instance_num)],[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_' num2str(frame_num) '_maskcrop.png']);
-                file_list = [file_list; names];
- 
+                if(exist(fullfile(data_dir,names.mask)))
+                    file_list = [file_list; names];
+                end
                 frame_num = frame_num + 50;
                 img_name = fullfile(instance_dir,[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_' num2str(frame_num) '_crop.png']);
                 depth_name = fullfile(instance_dir,[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_' num2str(frame_num) '_depthcrop.png']);
