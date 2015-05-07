@@ -14,7 +14,7 @@ file_list = [];
 for i=1:num_objects
     obj_name = object_dirs(i).name;
     instance_num = 1;
-    instance_dir = fullfile(data_dir,obj_name,[obj_name '_1']);
+    instance_dir = fullfile(data_dir,obj_name,[obj_name '_1'])
     while(isdir(instance_dir))
         video_num = 1;
         video_begin = fullfile(instance_dir,[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_1_crop.png']);
@@ -24,20 +24,20 @@ for i=1:num_objects
             depth_name = fullfile(instance_dir,[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_1_depthcrop.png']);
             mask_name = fullfile(instance_dir,[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_1_maskcrop.png']);
             while(exist(img_name,'file'))
-                names.img = img_name;
-                names.depth = depth_name;
-                names.mask = mask_name;
+                names.img = fullfile(obj_name,[obj_name '_' num2str(instance_num)],[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_' num2str(frame_num) '_crop.png']);
+                names.depth = fullfile(obj_name,[obj_name '_' num2str(instance_num)],[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_' num2str(frame_num) '_depthcrop.png']);
+                names.mask = fullfile(obj_name,[obj_name '_' num2str(instance_num)],[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_' num2str(frame_num) '_maskcrop.png']);
                 file_list = [file_list; names];
  
-                frame_num = frame_num + 1;
+                frame_num = frame_num + 50;
                 img_name = fullfile(instance_dir,[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_' num2str(frame_num) '_crop.png']);
                 depth_name = fullfile(instance_dir,[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_' num2str(frame_num) '_depthcrop.png']);
                 mask_name = fullfile(instance_dir,[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_' num2str(frame_num) '_maskcrop.png']);
             end
             video_num = video_num + 1;
-            video_begin = fullfile(instance_dir,'_',video_num,'_1_crop.png');
+            video_begin = fullfile(instance_dir,[obj_name '_' num2str(instance_num) '_' num2str(video_num) '_1_crop.png']);
         end
         instance_num = instance_num + 1;
-        instance_dir = fullfile(data_dir,object_dirs(i).name,[object_dirs(i).name num2str(instance_num)]);
+        instance_dir = fullfile(data_dir,obj_name,[obj_name '_' num2str(instance_num)])
     end
 end

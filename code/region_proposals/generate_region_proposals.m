@@ -46,10 +46,10 @@ while size(region_proposals, 1) < params.num_regions & i <= params.score_thresho
 
 end
 
-hold off;
 
 if plotFlag == true
 	figure(1);
+	hold off;
 	title('Detected Regions');
 	cVec = 'bgrcmykbgrcmykbgrcmykbgrcmyk'; cVec = [cVec cVec];
 	imshow(I);
