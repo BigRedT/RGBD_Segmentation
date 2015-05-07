@@ -1,39 +1,29 @@
-function [im_seg, im_patch, label_full, cut_energy] = segmentPatch(im, im_depth, im_edge, patch_coord, active_mask)
+function [im_seg, im_patch, label_full, cut_energy] = segmentPatch_rgb(im, im_edge, patch_coord, active_mask)
 
-
-    	im_depth_ori = im_depth;
-		
-	im_depth = im_depth - min(im_depth(:));
-	im_depth = im_depth./max(im_depth(:));
 
 	im_patch = im(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), :);
-	im_depth_patch = im_depth(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), :);
 	im_edge_patch = im_edge(patch_coord(1):patch_coord(2),patch_coord(3):patch_coord(4), :);
 	active_mask_patch = active_mask(patch_coord(1):patch_coord(2),patch_coord(3):patch_coord(4)) == 0;
 	
 	h = size(im_patch, 1); 
 	w = size(im_patch, 2); 
 	
-	energy_color = runColorGMMUnary(im_patch, im, im_depth, patch_coord, active_mask_patch,true);
-    	energy_coor_patch = runCoorRFUnary(energy_color, im_depth_ori, patch_coord);
-    
+	energy_color = runColorGMMUnary(im_patch, im, [], patch_coord, active_mask_patch, false);
 	energy_color_patch = energy_color(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4));
 	dataCost = double(zeros(2, h*w));
 	
 	w_color = 1;
-	w_coor = 0;
 	
-	dataCost(1, :) = (w_color).*(-log(energy_color_patch(:))) + (w_coor).*(-log(energy_coor_patch(:)));
-	dataCost(2, :) = (w_color).*(-log(1-energy_color_patch(:))) + (w_coor).*(-log(1-energy_coor_patch(:)));
+	dataCost(1, :) = (w_color).*(-log(energy_color_patch(:)));
+	dataCost(2, :) = (w_color).*(-log(1-energy_color_patch(:)));
 		
 	%add pairwise terms
 	m = 25;
-	dim = 10;
 	K = min(w/10, h/10).^2;
-	%[sp_labels,  sp_centers, ~, ~] = slic_rgb(im_patch, K, m);
-	[sp_labels,  sp_centers, ~, ~] = slic_rgbd(im_patch, im_depth_patch, K, m, 1);
+	[sp_labels,  sp_centers, ~, ~] = slic_rgb(im_patch, K, m);
+	%[sp_labels,  sp_centers, ~, ~] = slic_rgbd(im_patch, im_depth_patch, K, m, 1);
 
-	[uniformCost, sparseSmoothness] = createSmoothnessCost(im_depth_patch, im_edge_patch, sp_labels, sp_centers, active_mask_patch);
+	[uniformCost, sparseSmoothness] = createSmoothnessCost(im_edge_patch, sp_labels, sp_centers, active_mask_patch);
 
 	%open a graph cut object
 	[gch] = GraphCut('open', dataCost, uniformCost, sparseSmoothness);
@@ -91,30 +81,27 @@ function [im_seg, im_patch, label_full, cut_energy] = segmentPatch(im, im_depth,
 %	k1 = waitforbuttonpress;
 end
 
-function [uniformCost, sparseSmoothness] = createSmoothnessCost(im_depth, im_edge, sp_labels, sp_centers, active_mask)
+function [uniformCost, sparseSmoothness] = createSmoothnessCost(im_edge, sp_labels, sp_centers, active_mask)
 
 	uniformCost = double(zeros(2, 2));
 	uniformCost(1, 2) = 1;
 	uniformCost(2, 1) = 1;
 
-	width = size(im_depth, 2);
-	height = size(im_depth, 1);
+	width = size(im_edge, 2);
+	height = size(im_edge, 1);
 
-	w_depth = 5;
 	w_sp = 5;
 	w_edge = 5;
 
-	horzCost = double(zeros(size(im_depth, 1), size(im_depth, 2)));
-	for j = [1:size(im_depth, 2)-1]
-	        horzCost(:, j) = w_depth.*(exp(-1*(im_depth(:, j) - im_depth(:, j+1)).^2)) ... 
-			       + w_edge.*(exp(-1*im_edge(:, j))) ... 
+	horzCost = double(zeros(size(im_edge, 1), size(im_edge, 2)));
+	for j = 1:width-1
+	        horzCost(:, j) = w_edge.*(exp(-1*im_edge(:, j))) ... 
 			       +  (exp(-1* mean((sp_centers(sp_labels(:,j),:) - sp_centers(sp_labels(:,j+1),:)).^2, 2))).*w_sp;
 	end
 
-	vertCost = double(zeros(size(im_depth, 1), size(im_depth, 2)));
-	for j = [1:size(im_depth, 1)-1]
-	       vertCost(j, :) = w_depth.*(exp(-1*(im_depth(j, :) - im_depth(j+1, :)).^2)) ... 
-                               + w_edge.*(exp(-1*im_edge(j, :))) ... 
+	vertCost = double(zeros(size(im_edge, 1), size(im_edge, 2)));
+	for j = 1:height-1
+	       vertCost(j, :) = w_edge.*(exp(-1*im_edge(j, :))) ... 
 			       +  (exp(-1* mean((sp_centers(sp_labels(j,:),:) - sp_centers(sp_labels(j+1, :),:)).^2, 2)))'.*w_sp;
 	end
 

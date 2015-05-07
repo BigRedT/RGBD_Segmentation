@@ -1,4 +1,4 @@
-function [X, Y] = storeEnergy(im, im_depth, im_edge, edge_group, patch_coord, active_mask, trueMask)
+function [X, Y] = storeEnergy(im, im_depth, patch_coord, active_mask, trueMask)
 
 	record_energy = {};
 
@@ -7,15 +7,11 @@ function [X, Y] = storeEnergy(im, im_depth, im_edge, edge_group, patch_coord, ac
 
 	im_patch = im(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), :);
 	im_depth_patch = im_depth(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), :);
-	im_edge_patch = im_edge(patch_coord(1):patch_coord(2),patch_coord(3):patch_coord(4), :);
 	active_mask_patch = active_mask(patch_coord(1):patch_coord(2),patch_coord(3):patch_coord(4));
 	
 	h = size(im_patch, 1); 
 	w = size(im_patch, 2); 
 	
-	edge_group_patch = ...
-	    edge_group(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), 1);
-
 	energy_color = runColorGMMUnary(im_patch, im, im_depth, patch_coord, active_mask_patch);
     	energy_coor = runCoorRFUnary(energy_color, im_depth_ori, patch_coord);
     

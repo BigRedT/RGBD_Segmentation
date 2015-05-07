@@ -1,10 +1,14 @@
-function color_unary = runColorGMMUnary(im, im_large, im_depth, loc, active_mask)
+function color_unary = runColorGMMUnary(im, im_large, im_depth, loc, ...
+                                        active_mask, depth_flag)
 
 
 mask = zeros(size(im_large, 1), size(im_large, 2));
 mask(loc(1):loc(2), loc(3):loc(4)) = active_mask;
-
-I = cat(3, rgb2lab(im_large), im_depth);
+if(depth_flag)
+    I = cat(3, rgb2lab(im_large), im_depth);
+else
+    I = rgb2lab(im_large);
+end
 
 %figure(1);
 %imshow(I(loc(1):loc(2), loc(3):loc(4),:));
@@ -15,16 +19,33 @@ K = 5; %number of gaussians in GMMs
 nPix = size(I, 1)*size(I, 2); 
 
 ind_fg = find(mask == 1);
-X_fg = [I(ind_fg) I(ind_fg + nPix) I(ind_fg + 2*nPix) I(ind_fg + 3*nPix)];
+if(depth_flag)
+    X_fg = [I(ind_fg) I(ind_fg + nPix) I(ind_fg + 2*nPix) I(ind_fg ...
+                                                      + 3*nPix)];
+else
+    X_fg = [I(ind_fg) I(ind_fg + nPix) I(ind_fg + 2*nPix)];
+end
+
 n_fg = size(X_fg, 1); 
 gmm_fg = fitgmdist(X_fg, K, 'CovarianceType', 'diagonal', 'SharedCovariance', true);
 
 ind_bg = find(mask == 0);
-X_bg = [I(ind_bg) I(ind_bg + nPix) I(ind_bg + 2*nPix) I(ind_bg + 3*nPix)];
+if(depth_flag)
+    X_bg = [I(ind_bg) I(ind_bg + nPix) I(ind_bg + 2*nPix) I(ind_bg ...
+                                                      + 3*nPix)];
+else
+    X_bg = [I(ind_bg) I(ind_bg + nPix) I(ind_bg + 2*nPix)];
+end
 n_bg = size(X_bg, 1);
 gmm_bg = fitgmdist(X_bg, K, 'CovarianceType', 'diagonal', 'SharedCovariance', true);
 
-Iflat = [reshape(I(:, :, 1), 1, [])' reshape(I(:, :, 2), 1, [])' reshape(I(:, :, 3), 1, [])' reshape(I(:, :, 4), 1, [])'];
+if(depth_flag)
+    Iflat = [reshape(I(:, :, 1), 1, [])' reshape(I(:, :, 2), 1, [])' ...
+             reshape(I(:, :, 3), 1, [])' reshape(I(:, :, 4), 1, [])'];
+else
+    Iflat = [reshape(I(:, :, 1), 1, [])' reshape(I(:, :, 2), 1, [])' ...
+             reshape(I(:, :, 3), 1, [])'];
+end
 p_x_fg = pdf(gmm_fg, Iflat).*(n_fg/nPix);
 p_x_bg = pdf(gmm_bg, Iflat).*(n_bg/nPix);
 
