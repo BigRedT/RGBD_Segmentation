@@ -1,4 +1,4 @@
-function [cIndMap, time, imgVis] = slic_rgb(img, K, compactness)
+function [cIndMap, cCenters, time, imgVis] = slic_rgb(img, K, compactness)
 
 %% Implementation of Simple Linear Iterative Clustering (SLIC)
 %
@@ -145,7 +145,16 @@ imgVis(:, :, 1) = rgbImg(:, :, 1).*double(abs(mask-1)) + double(mask);
 imgVis(:, :, 2) = rgbImg(:, :, 2).*double(abs(mask-1)) + double(mask);
 imgVis(:, :, 3) = rgbImg(:, :, 3).*double(abs(mask-1)) + double(mask);
 
-time = toc;
 
+cid = unique(label);
+cCenters = double(zeros(cid(end), 3));
+for i = [1:numel(cid)]
+	memb_id = find(label == cid(i));
+	newlab = reshape(img, [], 3);
+	cCenters(cid(i), :) = sum(newlab(memb_id, :), 1)./numel(memb_id);
+
+end
+
+time = toc;
 end
 
