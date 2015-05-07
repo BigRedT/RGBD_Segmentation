@@ -1,7 +1,10 @@
 function [im_seg, im_patch] = segmentPatch(im, im_depth, im_edge, edge_group, patch_coord)
 
 	m = 25;
+    
+    im_seg = [];
 	
+    im_depth_ori = im_depth;
 	im_depth = im_depth - min(im_depth(:));
 	im_depth = im_depth./max(im_depth(:));
 
@@ -35,20 +38,25 @@ function [im_seg, im_patch] = segmentPatch(im, im_depth, im_edge, edge_group, pa
 	
 	%add unary terms
 
-	energy_edge =  unary_edge(im_patch, im_depth_patch, 'edges', ...
- 			    im_edge_patch, 'edge_group', ...
-			    edge_group_patch, 'visualize', false);
+	%energy_edge =  unary_edge(im_patch, im_depth_patch, 'edges', ...
+ 	%		    im_edge_patch, 'edge_group', ...
+    %			    edge_group_patch, 'visualize', false);
 
 	energy_color = runColorGMMUnary(im_patch, im, im_depth, patch_coord);
 
- 	dataCost = double(zeros(h, w, 2));
+    energy_coor = runCoorRFUnary(energy_color, im_depth_ori, patch_coord);
+    
+    return;
+
+ 	dataCost = double(zeros(h, w, 4));
 	
 	w_edge = -1;
 	w_color = -1;
+    w_coor = -1;
 	dataCost(:, :, 1) = (w_color).*(log(energy_color));
 	dataCost(:, :, 2) = (w_color).*(log(1-energy_color));
-
-	
+    dataCost(:, :, 3) = (w_coor).*(log(energy_coor));
+	dataCost(:, :, 4) = (w_coor).*(log(1-energy_coor));
 
 	%add pairwise terms
 	K = min(w/5, h/5).^2;

@@ -37,6 +37,6 @@ regions = sortrows(regions, [8 -5]);
 for i = [1:size(regions, 1)]
 	currRegion = regions(i, :);
 	[im_seg, im_patch] = segmentPatch(I, I_depth, edges, edge_group, [currRegion(2), currRegion(7), currRegion(1), currRegion(6)]);
-	imwrite(im_seg, ['results/' num2str(i) '_seg.png']);
-	imwrite(im_patch, ['results/' num2str(i) '_patch.png']);
+	%imwrite(im_seg, ['results/' num2str(i) '_seg.png']);
+	%imwrite(im_patch, ['results/' num2str(i) '_patch.png']);
 end

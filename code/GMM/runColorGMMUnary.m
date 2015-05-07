@@ -39,7 +39,7 @@ img_p_bg_x = reshape(p_bg_x, size(I, 1), size(I, 2));
 %imagesc(img_p_fg_x(r:r+size(im_crop,1), c:c+size(im_crop,2)));
 %title('Likelihood that pixel is foreground');
 
-color_unary = img_p_fg_x(loc(1):loc(2), loc(3):loc(4)); 
+color_unary = img_p_fg_x;%(loc(1):loc(2), loc(3):loc(4)); 
 
 %% params
 %K = 5;
