@@ -9,7 +9,7 @@ num_files = numel(file_list);
 file_list_cell = mat2cell(file_list,ones(1,num_files),1);
 
 
-for i=869:869
+parfor i=1:num_files
    [active_mask{i} bbox{i}] = heirarchicalSeg(data_dir,depth_dir,file_list_cell{i},i,out_dir,depth_flag);
 end
 

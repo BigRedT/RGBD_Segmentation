@@ -3,8 +3,8 @@ function [im_seg, im_patch, label_full, cut_energy] = segmentPatch(im, im_depth,
 
     	im_depth_ori = im_depth;
 		
-	im_depth = im_depth - min(im_depth(:));
-	im_depth = im_depth./max(im_depth(:));
+	im_depth_norm = im_depth - min(im_depth(:));
+	im_depth_norm = im_depth_norm./max(im_depth_norm(:));
 
 	im_patch = im(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), :);
 	im_depth_patch = im_depth(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), :);
@@ -14,10 +14,13 @@ function [im_seg, im_patch, label_full, cut_energy] = segmentPatch(im, im_depth,
 	h = size(im_patch, 1); 
 	w = size(im_patch, 2); 
 	
-	energy_color = runColorGMMUnary(im_patch, im, im_depth, patch_coord, active_mask_patch,true);
+	energy_color = runColorGMMUnary(im_patch, im, im_depth_norm, patch_coord, active_mask_patch,true);
     	energy_coor_patch = runCoorRFUnary(energy_color, im_depth_ori, patch_coord);
-    
-	energy_color_patch = energy_color(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4));
+        
+	energy_color_patch = energy_color(patch_coord(1):patch_coord(2), ...
+                                          patch_coord(3):patch_coord(4));
+        energy_color_patch = energy_color_patch.*double(active_mask_patch);
+
 	dataCost = double(zeros(2, h*w));
 	
 	w_color = 1;
@@ -63,10 +66,10 @@ function [im_seg, im_patch, label_full, cut_energy] = segmentPatch(im, im_depth,
 
 	% im_seg = blueImg.*mask3D + im_patch.*abs(mask3D-1);
         im_seg = [];
-%	figure(1);
-%	subplot(2,3,1),
-%	imagesc(energy_color);
-%	title('unary color cost');
+	figure(1);
+	subplot(2,3,1),
+	imagesc(energy_color);
+	title('unary color cost');
 %
 %	subplot(2,3,2);
 %	imagesc(vertCost); 
@@ -100,9 +103,9 @@ function [uniformCost, sparseSmoothness] = createSmoothnessCost(im_depth, im_edg
 	width = size(im_depth, 2);
 	height = size(im_depth, 1);
 
-	w_depth = 5;
-	w_sp = 5;
-	w_edge = 5;
+	w_depth = 0.1;
+	w_sp = 0.1;
+	w_edge = 0.1;
 
 	horzCost = double(zeros(size(im_depth, 1), size(im_depth, 2)));
 	for j = [1:size(im_depth, 2)-1]
