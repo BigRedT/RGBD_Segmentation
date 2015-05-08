@@ -1,4 +1,4 @@
-function [im_seg, im_patch, label_full, cut_energy] = segmentPatch_rgb(im, im_edge, patch_coord, active_mask)
+function [im_seg, im_patch, label_full, cut_energy] = segmentPatch_rgb(im, im_edge, patch_coord, active_mask, pairwise_weight)
 
 
 	im_patch = im(patch_coord(1):patch_coord(2), patch_coord(3):patch_coord(4), :);
@@ -23,7 +23,7 @@ function [im_seg, im_patch, label_full, cut_energy] = segmentPatch_rgb(im, im_ed
 	[sp_labels,  sp_centers, ~, ~] = slic_rgb(im_patch, K, m);
 	%[sp_labels,  sp_centers, ~, ~] = slic_rgbd(im_patch, im_depth_patch, K, m, 1);
 
-	[uniformCost, sparseSmoothness] = createSmoothnessCost(im_edge_patch, sp_labels, sp_centers, active_mask_patch);
+	[uniformCost, sparseSmoothness] = createSmoothnessCost(im_edge_patch, sp_labels, sp_centers, active_mask_patch,pairwise_weight);
 
 	%open a graph cut object
 	[gch] = GraphCut('open', dataCost, uniformCost, sparseSmoothness);
@@ -81,7 +81,7 @@ function [im_seg, im_patch, label_full, cut_energy] = segmentPatch_rgb(im, im_ed
 %	k1 = waitforbuttonpress;
 end
 
-function [uniformCost, sparseSmoothness] = createSmoothnessCost(im_edge, sp_labels, sp_centers, active_mask)
+function [uniformCost, sparseSmoothness] = createSmoothnessCost(im_edge, sp_labels, sp_centers, active_mask, pairwise_weight)
 
 	uniformCost = double(zeros(2, 2));
 	uniformCost(1, 2) = 1;
@@ -90,8 +90,8 @@ function [uniformCost, sparseSmoothness] = createSmoothnessCost(im_edge, sp_labe
 	width = size(im_edge, 2);
 	height = size(im_edge, 1);
 
-	w_sp = 5;
-	w_edge = 5;
+	w_sp = pairwise_weight;
+	w_edge = pairwise_weight;
 
 	horzCost = double(zeros(size(im_edge, 1), size(im_edge, 2)));
 	for j = 1:width-1
