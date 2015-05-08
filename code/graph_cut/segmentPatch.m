@@ -65,11 +65,11 @@ function [im_seg, im_patch, label_full, cut_energy] = segmentPatch(im, im_depth,
 	% blueImg(:, :, 3) = 1;
 
 	% im_seg = blueImg.*mask3D + im_patch.*abs(mask3D-1);
-        im_seg = [];
-	figure(1);
-	subplot(2,3,1),
-	imagesc(energy_color);
-	title('unary color cost');
+        % im_seg = [];
+	% figure(1);
+	% subplot(2,3,1),
+	% imagesc(energy_color);
+	% title('unary color cost');
 %
 %	subplot(2,3,2);
 %	imagesc(vertCost); 
