@@ -27,7 +27,7 @@ B = glmfit(energy_terms, abs(1-true_labels), 'link', 'logit');
 end
 
 function [energy_terms true_labels] = getEnergyAndLabels(data_dir_full,depth_dir_full,file_data,idx)
-full_img = imread(fullfile(data_dir_full,file_data.img));
+full_img = im2double(imread(fullfile(data_dir_full,file_data.img)));
 full_depth = load(fullfile(depth_dir_full, [num2str(idx) '.mat']));
 patch_coord = file_data.patch_coord;
 true_mask = file_data.mask;

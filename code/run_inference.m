@@ -18,7 +18,7 @@ end
 function [active_mask bbox]= heirarchicalSeg(data_dir,depth_dir,file_data, ...
                                              idx, out_dir, depth_flag)
 % Read images
-full_img = imread(fullfile(data_dir,file_data.img));
+full_img = im2double(imread(fullfile(data_dir,file_data.img)));
 load(fullfile(depth_dir, [num2str(idx) '.mat']));
 full_depth = filled_depth;
 [h,w,~] = size(full_img);

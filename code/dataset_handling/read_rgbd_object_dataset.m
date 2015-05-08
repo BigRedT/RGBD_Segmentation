@@ -42,3 +42,12 @@ for i=1:num_objects
         instance_dir = fullfile(data_dir,obj_name,[obj_name '_' num2str(instance_num)])
     end
 end
+
+function pos=get_bbox(data_dir, crop_img_name, txt_file_name)
+img = imread(fullfile(data_dir,crop_img_name));
+[h,w] = imread(img);
+import(coord,txt_file_name);
+pos = [data(1) data(1)+h-1 data(2) data(2)+w-1];
+end
+
+
